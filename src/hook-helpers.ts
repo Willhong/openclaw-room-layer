@@ -33,6 +33,18 @@ function isNoReplyText(text: string): boolean {
   return stripReplyTagPrefix(text).trim() === "NO_REPLY";
 }
 
+function isSessionBootstrapText(text: string): boolean {
+  const normalized = stripReplyTagPrefix(text).trim();
+  if (!normalized) return false;
+
+  return (
+    normalized === "/new" ||
+    normalized === "/reset" ||
+    normalized.startsWith("A new session was started via /new or /reset.") ||
+    normalized.includes("Run your Session Startup sequence")
+  );
+}
+
 function parseDiscordConversationRef(conversationId?: string): RoomRef | null {
   const value = asString(conversationId);
   if (!value) return null;
@@ -130,6 +142,7 @@ export function roomEventFromInbound(
 ): RoomEvent | null {
   const text = event.content?.trim();
   if (!text) return null;
+  if (isSessionBootstrapText(text)) return null;
   return {
     roomKey: room.roomKey,
     providerMessageId: extractProviderMessageId(event.metadata),
