@@ -1,47 +1,53 @@
 # @willhong/openclaw-room-layer
 
-Hybrid room layer plugin for OpenClaw.
+A room-oriented memory layer for OpenClaw.
 
-## Purpose
+## Why this project exists
 
-This plugin adds a shared room-memory layer on top of existing session-native OpenClaw behavior.
+OpenClaw already has strong session-native behavior, but multi-agent conversations often need something slightly different: a shared room view that sits above individual agent sessions.
 
-Current target:
-- Discord shared rooms
-- multi-agent room event log
-- shared context injection
-- room-oriented debug/read APIs
+This project was created to make room-based collaboration easier to reason about.
 
-## Current state
+Instead of trying to replace OpenClaw's existing execution model, it adds a lightweight room layer that can:
+- derive a stable room identity from provider conversations
+- keep a shared event log for that room
+- let multiple agent sessions reference the same recent room history
+- expose room state for debugging and inspection
 
-Implemented today:
-- Discord channel/thread to stable `roomKey` derivation
-- append-only room event logging in plugin-owned storage
-- basic event dedupe
-- participant tracking based on active room/session usage
-- recent shared room context injection in `before_prompt_build`
-- HTTP read routes for room and event inspection
-- Discord include lists for channel/thread scoping
-- runtime `data/` excluded from the published repo
+In short, the goal is to make multi-agent rooms feel more coherent without rewriting the core runtime.
 
-Not implemented yet:
-- room-native dispatch replacement
-- plugin-enforced speaking policy engine
-- full room roster/policy management API
-- dashboard UI integration
-- cross-platform room abstraction beyond Discord
-- perfect dedupe across all edge cases
+## What it can do today
 
-## What this plugin is right now
+Current capabilities include:
+- derive stable Discord room keys from channels and threads
+- store append-only room event logs in plugin-owned storage
+- perform basic event deduplication
+- track participating agents as they interact with a room
+- inject recent shared room context during prompt build
+- expose HTTP read routes for room and event inspection
+- limit behavior to selected Discord channels/threads through config
 
-This is a **shared room memory MVP**, not a full room runtime.
+## What this enables
 
-That means:
-- OpenClaw sessions still remain the execution boundary
-- the plugin adds a shared room log and shared prompt context above those sessions
-- higher-level speaking behavior is still mostly enforced by workspace/team rules, not by plugin code alone
+With the current implementation, different agent sessions can share a lightweight room memory layer.
 
-## Files
+That makes it easier to:
+- preserve recent room context across participants
+- inspect what happened in a shared room
+- prototype multi-agent collaboration patterns
+- build room-aware tooling on top of OpenClaw
+
+## Current scope
+
+This project currently focuses on a practical MVP:
+- Discord-first room support
+- shared room memory and event logging
+- prompt-time shared context injection
+- debug-oriented inspection routes
+
+It does **not** yet try to fully replace session dispatch or become a full room-native runtime.
+
+## Project structure
 
 - `ROOM_LAYER_PLUGIN_MVP.md` — design notes, scope, milestones
 - `openclaw.plugin.json` — plugin manifest and config schema
@@ -49,10 +55,8 @@ That means:
 - `index.ts` — plugin entry
 - `src/` — room keying, persistence, hook helpers, checkpoints
 
-## Next likely steps
+## Status
 
-1. Add explicit room policy and roster metadata
-2. Tighten event dedupe and hook validation
-3. Add room management endpoints, not just read endpoints
-4. Add dashboard integration
-5. Decide how much room dispatch should move from docs into plugin logic
+The repository currently represents a working shared-room-memory MVP for OpenClaw.
+
+It is most useful for experimentation, debugging, and early room-aware multi-agent workflows.
