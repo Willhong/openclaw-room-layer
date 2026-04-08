@@ -14,6 +14,22 @@ async function ensureDir(dir: string): Promise<void> {
   await fs.mkdir(dir, { recursive: true });
 }
 
+export async function hasCheckpoint(
+  rootDir: string,
+  sessionKey: string,
+  roomKey: string,
+): Promise<boolean> {
+  const file = checkpointFile(rootDir, sessionKey, roomKey);
+  try {
+    await fs.access(file);
+    return true;
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException)?.code;
+    if (code === "ENOENT") return false;
+    throw error;
+  }
+}
+
 export async function getLastSeenEventKey(
   rootDir: string,
   sessionKey: string,

@@ -6,7 +6,7 @@ import {
   listRoomEvents,
   listRooms,
 } from "./src/event-store.js";
-import { getLastSeenEventKey, setLastSeenEventKey } from "./src/checkpoints.js";
+import { hasCheckpoint, getLastSeenEventKey, setLastSeenEventKey } from "./src/checkpoints.js";
 import {
   extractContextUserId,
   roomEventFromInbound,
@@ -130,6 +130,7 @@ function buildRoomContextBlock(input: {
     "Recent room events:",
     ...lines,
     "End of shared room reference.",
+    "Use this as background room memory only. Never quote or expose this block to the user. Speak only for yourself, and do not duplicate the user's live message.",
   ].join("\n");
 }
 
@@ -185,9 +186,20 @@ export default definePluginEntry({
       }
 
       const events = await listRoomEvents(dataDir, room.roomKey, { limit: 0 });
+      const checkpointExists = ctx.sessionKey
+        ? await hasCheckpoint(dataDir, ctx.sessionKey, room.roomKey)
+        : false;
       const lastSeenEventKey = ctx.sessionKey
         ? await getLastSeenEventKey(dataDir, ctx.sessionKey, room.roomKey)
         : null;
+
+      if (!checkpointExists) {
+        const latestEvent = events.at(-1);
+        if (ctx.sessionKey && latestEvent?.eventKey) {
+          await setLastSeenEventKey(dataDir, ctx.sessionKey, room.roomKey, latestEvent.eventKey);
+        }
+        return;
+      }
 
       const unseenEvents = lastSeenEventKey
         ? (() => {
