@@ -1,0 +1,55 @@
+{
+  "id": "openclaw-room-layer",
+  "name": "Room Layer",
+  "description": "Hybrid room registry and shared-context plugin for multi-agent rooms",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": {
+        "type": "boolean"
+      },
+      "providers": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "maxRecentEvents": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "dataDir": {
+        "type": "string"
+      },
+      "discord": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["channel", "thread"]
+            }
+          },
+          "includeChannelIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "includeThreadIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

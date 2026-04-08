@@ -1,0 +1,10 @@
+{
+  "name": "@willhong/openclaw-room-layer",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "description": "Hybrid room registry/event-log/shared-context plugin for OpenClaw multi-agent rooms",
+  "openclaw": {
+    "extensions": ["./index.ts"]
+  }
+}
